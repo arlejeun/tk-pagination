@@ -1,0 +1,266 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`tk-pagination`
+
+@demo demo/index.html
+-->
+
+<dom-module id="tk-pagination">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+      }
+      :host * {
+        display: inline-block;
+        font-size: 12px;
+        color: #586997;
+        height: 100%;
+      }
+      ul {
+        padding: 0;
+        margin: 0;
+      }
+      span {
+        text-align: center;
+        cursor: pointer;
+        color: #b6c5dc;
+        padding: 0px 10px;
+        margin: 0px 2px;
+        border: 1px solid #b6c5dc;
+      }
+      input {
+        width: 40px;
+        height: 30px;
+        margin: 0px 2px;
+        padding: 0px 2px;
+        outline: none;
+        border: 1px solid #b6c5dc;
+        color: #586997;
+      }
+      .selected {
+        color: #586997;
+        border: 1px solid #586997;
+      }
+      #jumpBtn {
+        color: #586997;
+        border-color: #586997;
+      }
+    </style>
+
+    <!--page couter-->
+    <div>共[[_pageCount]]页,</div>
+    <!--total-->
+    <div>[[total]]条</div>
+    <!--prev-->
+    <template is="dom-if" if="[[!_isFirstPage]]">
+      <span on-tap="_prev"><</span>
+    </template>
+    <!--pager-->
+    <div>
+      <template is="dom-repeat" items="[[_pages]]" as="page">
+        <span on-tap="_jumpTo" data-page$="[[page]]" class$="[[_computeClass(page, _currentPage)]]">
+          [[page]]
+        </span>
+      </template>
+    </div>
+    <!--next-->
+    <template is="dom-if" if="[[!_isLastPage]]">
+      <span on-tap="_next">></span>
+    </template>
+    <!--jumper-->
+    <div>
+      <input id="input" type="text">
+      <span id="jumpBtn" on-tap="_jump">跳转</span>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'tk-pagination',
+
+      properties: {
+        /**
+         * 每一页显示的数目，默认值为`10`
+         */
+        pageSize: {
+          type: Number,
+          value: 10,
+        },
+        /**
+         * 一共需要显示的条目
+         */
+        total: {
+          type: Number
+        },
+        /**
+         * 页面总数，根据`total`与`pageSize`计算获得
+         */
+        _pageCount: {
+          type: Number
+        },
+        /**
+         * 当前所在页数，默认值为`0`
+         */
+        _currentPage: {
+          type: Number,
+          value: 1,
+          notify: true,
+          observer: '_currentPageChange'
+        },
+        /**
+         * 最大显示数目，默认值为`5`
+         */
+        maxLength: {
+          type: Number,
+          value: 5
+        },
+        /**
+         * 是否为第一页，根据`_currentPage`计算所得，组件内部由此判断是否显示`prev`按钮，默认值为`true`
+         */
+        _isFirstPage: {
+          type: Boolean,
+          value: true
+        },
+        /**
+         * 是否为最后一页，根据`_currentPage`计算所得，组件内部由此判断是否显示`next`按钮，默认值为`true`
+         */
+        _isLastPage: {
+          type: Boolean,
+          value: true
+        },
+        /**
+         * 页数显示内容数组，根据`_pageCount`以及`_currentPage`计算所得
+         */
+        _pages: {
+          type: Array
+        }
+      },
+      observers: [
+        '_computePageCount(pageSize, total)',
+        '_computePages(_pageCount, _currentPage)'
+      ],
+      /**
+       * 根据每一页显示数（`pageSize`）以及总数（`total`）计算总页数
+       */
+      _computePageCount: function(pageSize, total) {
+        this._pageCount = Math.ceil(total / pageSize);
+      },
+      /**
+       * 计算`_isFirstPage`以及`_isLastPage`的值
+       */
+      _currentPageChange: function(currentPage) {
+        this._isFirstPage = currentPage == 1;
+        this._isLastPage = currentPage == this._pageCount;
+      },
+      /**
+       * 计算`pages`数组
+       */
+      _computePages: function(pageCount, currentPage) {
+        console.log(pageCount, currentPage, this.maxLength);
+        console.log(this);
+        const maxLength = this.maxLength;
+        const lastPage = pageCount;
+        let pages = [];
+
+        // 1 [2] 3 4 5
+        if (lastPage <= maxLength) {
+          for (let i = 1; i <= lastPage; i++) {
+            pages.push(i);
+          }
+          this._pages = pages;
+          console.log(pages);
+          return;
+        }
+        // 1 2 [3] 4... 10
+        if (currentPage < maxLength) {
+          for (let i = 1; i <= maxLength; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(lastPage);
+          this._pages = pages;
+          return;
+        }
+        // 1 ... 4 [5] 6 ... 9
+        if (currentPage > maxLength && currentPage <= (lastPage - maxLength)) {
+          pages.push(1);
+          pages.push('...');
+          let first = currentPage - Math.floor(maxLength / 2);
+          let last  = first + maxLength;
+          for (let i = first; i < last; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(lastPage)
+          this._pages = pages;
+          return;
+        }
+        // 1 ... 5 [6] 7
+        if (currentPage > (lastPage - maxLength)) {
+          pages.push(1);
+          pages.push('...');
+          let first = lastPage - maxLength;
+          for (let i = first; i <= lastPage; i++) {
+            pages.push(i);
+          }
+          this._pages = pages;
+          return;
+        }
+      },
+      /**
+       * 计算span的样式
+       */
+      _computeClass: function(page, currentPage) {
+        return page == currentPage ? 'selected' : '';
+      },
+      /**
+       * 上一页
+       */
+      _prev: function() {
+        const prev = this._currentPage - 1;
+        if (prev < 1) {
+          return;
+        }
+        this._currentPage = prev;
+      },
+      /**
+       * 下一页
+       */
+      _next: function() {
+        const next = this._currentPage + 1;
+        if (next > this._pageCount) {
+          return;
+        }
+        this._currentPage = next;
+      },
+      /**
+       * span跳转函数
+       */
+      _jumpTo: function(e) {
+        const targetNum = e.target.dataset.page;
+        if (targetNum === '...') {
+          return;
+        }
+        this._currentPage = targetNum;
+      },
+      /**
+       * 根据input输入值跳转
+       */
+      _jump: function() {
+        const inputEl = this.$.input;
+        const to = inputEl.value;
+        if (!to && to != this._pageCount) {
+          return;
+        }
+        this._currentPage = to;
+        inputEl.value = '';
+      }
+    });
+  </script>
+</dom-module>
