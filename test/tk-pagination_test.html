@@ -21,8 +21,16 @@
     <script>
       suite('tk-pagination', function() {
         test('instantiating the element works', function() {
-          var element = fixture('basic');
+          let element = fixture('basic');
           assert.equal(element.is, 'tk-pagination');
+        });
+
+        test('basic test', function() {
+          let element = fixture('basic');
+          element.total = 400;
+          element.pageSize = 20;
+          assert.equal(element.pageCount, 20);
+          assert.equal(element.currentPage, 1);
         });
       });
     </script>

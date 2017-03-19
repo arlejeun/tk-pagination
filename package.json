@@ -1,0 +1,29 @@
+{
+  "name": "tk-pagination",
+  "version": "0.1.0",
+  "description": "A pagination.",
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint test/**/*.html demo/**/*.html ./*.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cloudgz/tk-form-dialog.git"
+  },
+  "author": "The cloudgz team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cloudgz/tk-paginatioin/issues"
+  },
+  "homepage": "https://github.com/cloudgz/tk-pagination#readme",
+  "devDependencies": {
+    "eslint": "^3.7.1",
+    "eslint-config-defaults": "^9.0.0",
+    "eslint-config-google": "^0.6.0",
+    "eslint-plugin-html": "^1.5.3"
+  }
+}

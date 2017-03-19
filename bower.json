@@ -1,6 +1,27 @@
 {
   "name": "tk-pagination",
+  "version": "1.0.0",
+  "description": "A simple pagination.",
+  "private": true,
+  "authors": [
+    "The cloudgz team"
+  ],
+  "keywords": [
+    "web-components",
+    "web-component",
+    "polymer",
+    "tk",
+    "pagination"
+  ],
   "main": "tk-pagination.html",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cloudgz/tk-pagination.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cloudgz/tk-pagination/issues"
+  },
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0"
   },
