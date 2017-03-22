@@ -18,6 +18,12 @@
       </template>
     </test-fixture>
 
+    <test-fixture id="basicSet">
+      <template>
+        <tk-pagination total="400" page-size="20"></tk-pagination>
+      </template>
+    </test-fixture>
+
     <script>
       suite('tk-pagination', function() {
         test('instantiating the element works', function() {
@@ -26,11 +32,20 @@
         });
 
         test('basic test', function() {
-          let element = fixture('basic');
-          element.total = 400;
-          element.pageSize = 20;
-          assert.equal(element.pageCount, 20);
+          let element = fixture('basicSet');
+          assert.equal(element.total, 400);
+          assert.equal(element.pageSize, 20);
+          assert.equal(element._pageCount, 20);
           assert.equal(element.currentPage, 1);
+        });
+
+        test('jump click test', function() {
+          let element = fixture('basicSet');
+          let input = element.querySelector('input');
+          let jump = element.querySelector('#jumpBtn');
+          input.value = 2;
+          jump.click();
+          assert(element.currentPage, 2);
         });
       });
     </script>

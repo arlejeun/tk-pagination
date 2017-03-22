@@ -7,9 +7,11 @@
 - pageSize: 平均每一页显示的条目；
 - maxLength: 样式上，超过多少页出现`...`过渡样式；
 
+检测页面变化组件属性`currentPage`也会跟着变化
+
 Example:
 
-    <tk-pagination total="400" page-size="5" max-length="8"></tk-pagination>
+    <tk-pagination total="400" page-size="5" max-length="8" current-page="{{currentPage}}"></tk-pagination>
 
 @group cloudgz
 @demo demo/index.html
