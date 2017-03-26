@@ -110,6 +110,13 @@ Example:
           type: Number
         },
         /**
+         * 是否开启条目选择器
+         */
+        isOpenSelector: {
+          type: Boolean,
+          value: true
+        },
+        /**
          * 页面总数，根据`total`与`pageSize`计算获得
          */
         _pageCount: {
@@ -179,6 +186,9 @@ Example:
        * @param {string|number} currentPage 当前页数
        */
       _computePages: function(pageCount, currentPage) {
+        if (!currentPage) {
+          currentPage = 1;
+        }
         const maxLength = this.maxLength;
         const lastPage = parseInt(pageCount, 10);
         let pages = [];
