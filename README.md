@@ -1,5 +1,11 @@
 # \<tk-pagination\>[![Build Status](https://travis-ci.org/cloudgz/tk-pagination.svg?branch=master)](https://travis-ci.org/cloudgz/tk-pagination)[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/cloudgz/tk-pagination)
 
+# Install
+
+```sh
+bower install cloudgz/tk-pagination --save
+```
+
 `tk-pagination` is a simple pagination. It base on four properties:
 
 - total: total number;
@@ -7,7 +13,7 @@
 - maxLength: how many numbers would change the style of `tk-pagination`;
 - currentPage: current page number.
 
-`tk-pagination`是一个简单的分页器，它可以通过设置三个属性来显示不同的样式：
+`tk-pagination`是一个简单的分页器，它可以通过设置四个属性来显示不同的样式：
 
 - total: 一共需要显示的条目；
 - pageSize: 平均每一页显示的条目；
