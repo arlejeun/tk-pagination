@@ -27,12 +27,12 @@
     <script>
       suite('tk-pagination', function() {
         test('instantiating the element works', function() {
-          var element = fixture('basic');
+          let element = fixture('basic');
           assert.equal(element.is, 'tk-pagination');
         });
 
         test('basic test', function() {
-          var element = fixture('basicSet');
+          let element = fixture('basicSet');
           assert.equal(element.total, 400);
           assert.equal(element.pageSize, 20);
           assert.equal(element._pageCount, 20);
@@ -40,9 +40,9 @@
         });
 
         test('jump click test', function() {
-          var element = fixture('basicSet');
-          var input = element.querySelector('input');
-          var jump = element.querySelector('#jumpBtn');
+          let element = fixture('basicSet');
+          let input = element.querySelector('input');
+          let jump = element.querySelector('#jumpBtn');
           input.value = 2;
           jump.click();
           assert(element.currentPage, 2);

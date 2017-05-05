@@ -177,7 +177,7 @@ Example:
        * @param {string|number} currentPage current page
        */
       _currentPageChange: function(currentPage) {
-        var current = parseInt(currentPage, 10);
+        let current = parseInt(currentPage, 10);
         this._isFirstPage = current === 1;
         this._isLastPage = current === this._pageCount;
       },
@@ -190,13 +190,13 @@ Example:
         if (!currentPage) {
           currentPage = 1;
         }
-        var maxLength = this.maxLength;
-        var lastPage = parseInt(pageCount, 10);
-        var pages = [];
+        let maxLength = this.maxLength;
+        let lastPage = parseInt(pageCount, 10);
+        let pages = [];
 
         // 1 [2] 3 4 5
         if (lastPage <= maxLength) {
-          for (var i = 1; i <= lastPage; i++) {
+          for (let i = 1; i <= lastPage; i++) {
             pages.push(i);
           }
           this._pages = pages;
@@ -204,7 +204,7 @@ Example:
         }
         // 1 2 [3] 4... 10
         if (currentPage < maxLength) {
-          for (var i = 1; i <= maxLength; i++) {
+          for (let i = 1; i <= maxLength; i++) {
             pages.push(i);
           }
           pages.push('...');
@@ -216,9 +216,9 @@ Example:
         if (currentPage > maxLength && currentPage <= (lastPage - maxLength)) {
           pages.push(1);
           pages.push('...');
-          var first = currentPage - Math.floor(maxLength / 2);
-          var last = first + maxLength;
-          for (var i = first; i < last; i++) {
+          let first = currentPage - Math.floor(maxLength / 2);
+          let last = first + maxLength;
+          for (let i = first; i < last; i++) {
             pages.push(i);
           }
           pages.push('...');
@@ -230,8 +230,8 @@ Example:
         if (currentPage > (lastPage - maxLength)) {
           pages.push(1);
           pages.push('...');
-          var first = lastPage - maxLength;
-          for (var i = first; i <= lastPage; i++) {
+          let first = lastPage - maxLength;
+          for (let i = first; i <= lastPage; i++) {
             pages.push(i);
           }
           this._pages = pages;
@@ -251,7 +251,7 @@ Example:
        * Prev event.
        */
       _prev: function() {
-        var prev = parseInt(this.currentPage, 10) - 1;
+        let prev = parseInt(this.currentPage, 10) - 1;
         if (prev < 1) {
           return;
         }
@@ -261,7 +261,7 @@ Example:
        * Next event.
        */
       _next: function() {
-        var next = parseInt(this.currentPage, 10) + 1;
+        let next = parseInt(this.currentPage, 10) + 1;
         if (next > this._pageCount) {
           return;
         }
@@ -272,7 +272,7 @@ Example:
        * @param {object} e click event.
        */
       _jumpTo: function(e) {
-        var targetNum = parseInt(e.target.dataset.page, 10);
+        let targetNum = parseInt(e.target.dataset.page, 10);
         if (targetNum === '...') {
           return;
         }
@@ -282,8 +282,8 @@ Example:
        * Jump to the page according to the input value, and clear the input value.
        */
       _jump: function() {
-        var inputEl = this.$.input;
-        var to = parseInt(inputEl.value, 10);
+        let inputEl = this.$.input;
+        let to = parseInt(inputEl.value, 10);
         if (!to || to === this._currentPage || to > this._pageCount) {
           return;
         }
