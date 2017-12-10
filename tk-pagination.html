@@ -1,25 +1,43 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <!--
-`tk-pagination` is a simple pagination. It base on four properties:
+`tk-pagination` is a simple pagination. It base on the following these properties:
 
 - total: total number;
 - pageSize: the number of pages displayed per page;
 - maxLength: how many numbers would change the style of `tk-pagination`;
 - currentPage: current page number.
+- noJumpDevice: hide the jump device.
+- noPageCount: hide the page count.
+- totalText: total text.
+- pageQuantifier: page quantifier.
+- itemQuantifier: item quantifier.
+- jumpButtonText: jump device button text. 
 
-`tk-pagination`是一个简单的分页器，它可以通过设置三个属性来显示不同的样式：
+`tk-pagination`是一个简单的分页器，它可以通过设置以下这些属性来显示不同的样式：
 
 - total: 一共需要显示的条目；
 - pageSize: 平均每一页显示的条目；
 - maxLength: 样式上，超过多少页出现`...`过渡样式；
 - currentPage: 当前页数
+- noJumpDevice: 隐藏跳转输入框以及按钮
+- noPageCount: 隐藏页面统计器
+- totalText: 统计标签文本
+- pageQuantifier: 页数统计量词，默认为`页`;
+- itemQuantifier: 条目统计量词，默认为`条`;
+- jumpButtonText: 跳转器按钮文本，默认为`跳转`;
 
 检测页面变化组件属性`currentPage`也会跟着变化
 
 Example:
 
-    <tk-pagination total="400" page-size="5" max-length="8" current-page="{{currentPage}}"></tk-pagination>
+    <tk-pagination
+      no-page-count
+      no-jump-device
+      total="400"
+      page-size="5"
+      max-length="8"
+      current-page="{{currentPage}}"></tk-pagination>
 
 @group cloudgz
 @demo demo/index.html
@@ -80,9 +98,12 @@ Example:
     </style>
 
     <!--page couter-->
-    <div>共[[_pageCount]]页,</div>
-    <!--total-->
-    <div id="total">[[total]]条</div>
+    
+    <template is="dom-if" if="[[!noPageCount]]">
+      <div>[[totalText]][[_pageCount]][[pageQuantifier]],</div>
+      <!--total-->
+      <div id="total">[[total]][[itemQuantifier]]</div>
+    </template>
     <!--prev-->
     <template is="dom-if" if="[[!_isFirstPage]]">
       <span on-tap="_prev"><</span>
@@ -99,11 +120,13 @@ Example:
     <template is="dom-if" if="[[!_isLastPage]]">
       <span on-tap="_next">></span>
     </template>
-    <!--jumper-->
-    <div>
-      <input id="input" type="text">
-      <span id="jumpBtn" on-tap="_jump">跳转</span>
-    </div>
+    <!--jump device-->
+    <template is="dom-if" if="[[!noJumpDevice]]">
+      <div>
+        <input id="input" type="text">
+        <span id="jumpBtn" on-tap="_jump">[[jumpButtonText]]</span>
+      </div>
+    </template>
   </template>
 
   <script>
@@ -146,6 +169,48 @@ Example:
         maxLength: {
           type: Number,
           value: 5
+        },
+        /**
+         * hide the `page counter`.
+         */
+        noPageCount: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * hide the `jump device`.
+         */
+        noJumpDevice: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * total text.
+         */
+        totalText: {
+          type: String,
+          value: '共'
+        },
+        /**
+         * page quantifier.
+         */
+        pageQuantifier: {
+          type: String,
+          value: '页'
+        },
+        /**
+         * item quantifier.
+         */
+        itemQuantifier: {
+          type: String,
+          value: '条'
+        },
+        /**
+         * `jump to` button text.
+         */
+        jumpButtonText: {
+          type: String,
+          value: '跳转'
         },
         /**
          * Whether it is the first page, computed by `currentPage`. It will affact the `prev` button. Default value is `true`.
@@ -290,6 +355,7 @@ Example:
        * Jump to the page according to the input value, and clear the input value.
        */
       _jump: function() {
+        if (this.noJumpDevice) return;
         let inputEl = this.$.input;
         let to = parseInt(inputEl.value, 10);
         if (!to || to === this._currentPage || to > this._pageCount) {

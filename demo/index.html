@@ -41,6 +41,18 @@
           <tk-pagination total=400 page-size=5 max-length=8 current-page="{{currentPage}}"></tk-pagination>
         </template>
       </demo-snippet>
+      <h3>Change the quantifier & jumpButtonText demo</h3>
+      <demo-snippet>
+        <template>
+          <tk-pagination total-text="total:" page-quantifier="pages" item-quantifier="items" jump-button-text="jump" total=400 current-page="{{currentPage}}"></tk-pagination>
+        </template>
+      </demo-snippet>
+      <h3>Set noJumpDevice & noPageCount demo</h3>
+      <demo-snippet>
+        <template>
+          <tk-pagination no-jump-device no-page-count total=400 current-page="{{currentPage}}"></tk-pagination>
+        </template>
+      </demo-snippet>
     </div>
   </body>
 </html>
