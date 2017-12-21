@@ -1,58 +1,342 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+<link rel="import" href="../polymer/polymer.html">
 
-    <title>tk-pagination demo</title>
+<!--
+`tk-pagination` is a simple pagination. It base on the following these properties:
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+- total: total number;
+- pageSize: the number of pages displayed per page;
+- maxLength: how many numbers would change the style of `tk-pagination`;
+- currentPage: current page number.
+- noJumpDevice: hide the jump device.
+- noPageCount: hide the page count.
+- totalText: total text.
+- pageQuantifier: page quantifier.
+- itemQuantifier: item quantifier.
+- jumpButtonText: jump device button text. 
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../tk-pagination.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
+Example:
+
+    <tk-pagination
+      no-page-count
+      no-jump-device
+      total="400"
+      page-size="5"
+      max-length="8"
+      current-page="{{currentPage}}"></tk-pagination>
+
+@group cloudgz
+@demo demo/index.html
+-->
+
+<dom-module id="tk-pagination">
+  <template>
+    <style>
+      :host {
+        display: inline-flex;
+        text-align: center;
+        height: 24px;
+        line-height: 24px;
+      }
+      div {
+        display: inline-flex;
+        font-size: 12px;
+        height: 100%;
+      }
+
+      #total {
+        margin-right: 10px;
+      }
+
+      span {
+          @apply --tk-pagination-span-theme;
+      }
+
+
+     input {
+        width: 48px;
+        height: 24px;
+        margin-left: 10px;
+        padding: 0;
+        outline: none;
+        border: 1px solid #b6c5dc;
+        color: #586997;
+        box-sizing: border-box;
+     }
+
+     .selected {
+        @apply --tk-pagination-span-selected-theme;
+     }
+
     </style>
-  </head>
-  <body>
-    <div style="max-width: 800px;" class="vertical-section-container centered">
-      <h3>Basic tk-pagination demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination total=40 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
-      <h3>Set pageSize demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination total=40 page-size=20 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
-      <h3>Lager total number demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination total=400 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
-      <h3>Set MaxLength demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination total=400 page-size=5 max-length=8 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
-      <h3>Change the quantifier & jumpButtonText demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination total-text="total:" page-quantifier="pages" item-quantifier="items" jump-button-text="jump" total=400 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
-      <h3>Set noJumpDevice & noPageCount demo</h3>
-      <demo-snippet>
-        <template>
-          <tk-pagination no-jump-device no-page-count total=400 current-page="{{currentPage}}"></tk-pagination>
-        </template>
-      </demo-snippet>
+
+    <!--page couter-->
+
+    <template is="dom-if" if="[[!noPageCount]]">
+      <div>[[totalText]] [[_pageCount]] [[pageQuantifier]],</div>
+      <!--total-->
+      <div id="total">[[total]] [[itemQuantifier]]</div>
+    </template>
+    <!--prev-->
+    <template is="dom-if" if="[[!_isFirstPage]]">
+      <span on-tap="_prev"><</span>
+    </template>
+    <!--pager-->
+    <div>
+      <template is="dom-repeat" items="[[_pages]]" as="page">
+        <span on-tap="_jumpTo" data-page$="[[page]]" class$="[[_computeClass(page, currentPage)]]">
+          [[page]]
+        </span>
+      </template>
     </div>
-  </body>
-</html>
+    <!--next-->
+    <template is="dom-if" if="[[!_isLastPage]]">
+      <span on-tap="_next">></span>
+    </template>
+    <!--jump device-->
+    <template is="dom-if" if="[[!noJumpDevice]]">
+      <div>
+        <input id="input" type="text">
+        <span id="jumpBtn" on-tap="_jump">[[jumpButtonText]]</span>
+      </div>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'tk-pagination',
+
+      properties: {
+        /**
+         * The numbers of pages displayed per page，default value is `10`.
+         */
+        pageSize: {
+          type: Number,
+          value: 10
+        },
+        /**
+         * Total number
+         */
+        total: {
+          type: Number
+        },
+        /**
+         * Total number of pages, computed by `total` and `pageSize`.
+         */
+        _pageCount: {
+          type: Number
+        },
+        /**
+         * Current page number, default value is `1`.
+         */
+        currentPage: {
+          type: Number,
+          value: 1,
+          notify: true,
+          observer: '_currentPageChange'
+        },
+        /**
+         * How many numbers would change the style of `tk-pagination`. Default value is `5`.
+         */
+        maxLength: {
+          type: Number,
+          value: 5
+        },
+        /**
+         * hide the `page counter`.
+         */
+        noPageCount: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * hide the `jump device`.
+         */
+        noJumpDevice: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * total text.
+         */
+        totalText: {
+          type: String,
+          value: ''
+        },
+        /**
+         * page quantifier.
+         */
+        pageQuantifier: {
+          type: String,
+          value: 'pages'
+        },
+        /**
+         * item quantifier.
+         */
+        itemQuantifier: {
+          type: String,
+          value: 'Total'
+        },
+        /**
+         * `jump to` button text.
+         */
+        jumpButtonText: {
+          type: String,
+          value: 'GoTo'
+        },
+        /**
+         * Whether it is the first page, computed by `currentPage`. It will affact the `prev` button. Default value is `true`.
+         */
+        _isFirstPage: {
+          type: Boolean,
+          value: true
+        },
+        /**
+         * Whether it is the last page, computed by `currentPage`. It will affact the `next` button. Default value is `true`.
+         */
+        _isLastPage: {
+          type: Boolean,
+          value: true
+        },
+        /**
+         * Dom repeat array, computed by `_pageCount` and `currentPage`.
+         */
+        _pages: {
+          type: Array
+        }
+      },
+      observers: [
+        '_computePageCount(pageSize, total)',
+        '_computePages(_pageCount, currentPage)'
+      ],
+      /**
+       * Calculate the value of `_pageCount` by `pageSize` and `total`
+       * @param {number} pageSize The number of pages per page
+       * @param {total} total Total number
+       */
+      _computePageCount: function(pageSize, total) {
+        this._pageCount = Math.ceil(total / pageSize);
+      },
+      /**
+       * Calculate the `_isFirstPage` and `_isLastPage`.
+       * @param {string|number} currentPage current page
+       */
+      _currentPageChange: function(currentPage) {
+        let current = parseInt(currentPage, 10);
+        this._isFirstPage = current === 1;
+        this._isLastPage = current === this._pageCount;
+      },
+      /**
+       * Calculate the `pages`.
+       * @param {string|number} pageCount Total pages number
+       * @param {string|number} currentPage Current page
+       */
+      _computePages: function(pageCount, currentPage) {
+        if (!currentPage) {
+          currentPage = 1;
+        }
+        let maxLength = this.maxLength;
+        let lastPage = parseInt(pageCount, 10);
+        let pages = [];
+
+        // 1 [2] 3 4 5
+        if (lastPage <= maxLength) {
+          for (let i = 1; i <= lastPage; i++) {
+            pages.push(i);
+          }
+          this._pages = pages;
+          return;
+        }
+        // 1 2 [3] 4... 10
+        if (currentPage < maxLength) {
+          for (let i = 1; i <= maxLength; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(lastPage);
+          this._pages = pages;
+          return;
+        }
+        // 1 ... 4 [5] 6 ... 10
+        if (currentPage > maxLength && currentPage <= (lastPage - maxLength)) {
+          pages.push(1);
+          pages.push('...');
+          let first = currentPage - Math.floor(maxLength / 2);
+          let last = first + maxLength;
+          for (let i = first; i < last; i++) {
+            pages.push(i);
+          }
+          pages.push('...');
+          pages.push(lastPage);
+          this._pages = pages;
+          return;
+        }
+        // 1 ... 8 [9] 10
+        if (currentPage > (lastPage - maxLength)) {
+          pages.push(1);
+          pages.push('...');
+          let first = lastPage - maxLength;
+          for (let i = first; i <= lastPage; i++) {
+            pages.push(i);
+          }
+          this._pages = pages;
+          return;
+        }
+      },
+      /**
+       * Calculate the style of span element.
+       * @param {string|number} page page
+       * @param {string|number} currentPage current page
+       * @return {undefined}
+       */
+      _computeClass: function(page, currentPage) {
+        return parseInt(page, 10) === currentPage ? 'selected' : '';
+      },
+      /**
+       * Prev event.
+       */
+      _prev: function() {
+        let prev = parseInt(this.currentPage, 10) - 1;
+        if (prev < 1) {
+          return;
+        }
+        this.currentPage = prev;
+      },
+      /**
+       * Next event.
+       */
+      _next: function() {
+        let next = parseInt(this.currentPage, 10) + 1;
+        if (next > this._pageCount) {
+          return;
+        }
+        this.currentPage = next;
+      },
+      /**
+       * Jump to the specified page.
+       * @param {object} e click event.
+       */
+      _jumpTo: function(e) {
+        let targetNum = parseInt(e.target.dataset.page, 10);
+        if (targetNum === '...') {
+          return;
+        }
+        this.currentPage = targetNum;
+      },
+      /**
+       * Jump to the page according to the input value, and clear the input value.
+       */
+      _jump: function() {
+        if (this.noJumpDevice) return;
+        let inputEl = this.$.input;
+        let to = parseInt(inputEl.value, 10);
+        if (!to || to === this._currentPage || to > this._pageCount) {
+          return;
+        }
+        this.currentPage = to;
+        inputEl.value = '';
+      }
+    });
+  </script>
+</dom-module>
