@@ -14,20 +14,6 @@
 - itemQuantifier: item quantifier.
 - jumpButtonText: jump device button text. 
 
-`tk-pagination`是一个简单的分页器，它可以通过设置以下这些属性来显示不同的样式：
-
-- total: 一共需要显示的条目；
-- pageSize: 平均每一页显示的条目；
-- maxLength: 样式上，超过多少页出现`...`过渡样式；
-- currentPage: 当前页数
-- noJumpDevice: 隐藏跳转输入框以及按钮
-- noPageCount: 隐藏页面统计器
-- totalText: 统计标签文本
-- pageQuantifier: 页数统计量词，默认为`页`;
-- itemQuantifier: 条目统计量词，默认为`条`;
-- jumpButtonText: 跳转器按钮文本，默认为`跳转`;
-
-检测页面变化组件属性`currentPage`也会跟着变化
 
 Example:
 
@@ -55,27 +41,19 @@ Example:
       div {
         display: inline-flex;
         font-size: 12px;
-        color: #586997;
         height: 100%;
       }
 
       #total {
         margin-right: 10px;
       }
+
       span {
-        display: inline-block;
-        font-size: 12px;
-        color: #586997;
-        width: 24px;
-        height: 24px;
-        text-align: center;
-        cursor: pointer;
-        color: #b6c5dc;
-        margin-left: 10px;
-        border: 1px solid #b6c5dc;
-        box-sizing: border-box;
+          @apply --tk-pagination-span-theme;
       }
-      input {
+
+
+     input {
         width: 48px;
         height: 24px;
         margin-left: 10px;
@@ -84,25 +62,20 @@ Example:
         border: 1px solid #b6c5dc;
         color: #586997;
         box-sizing: border-box;
-      }
-      .selected {
-        color: #586997;
-        border: 1px solid #586997;
-      }
-      #jumpBtn {
-        width: 48px;
-        height: 24px;
-        color: #586997;
-        border-color: #586997;
-      }
+     }
+
+     .selected {
+        @apply --tk-pagination-span-selected-theme;
+     }
+
     </style>
 
     <!--page couter-->
-    
+
     <template is="dom-if" if="[[!noPageCount]]">
-      <div>[[totalText]][[_pageCount]][[pageQuantifier]],</div>
+      <div>[[totalText]] [[_pageCount]] [[pageQuantifier]],</div>
       <!--total-->
-      <div id="total">[[total]][[itemQuantifier]]</div>
+      <div id="total">[[total]] [[itemQuantifier]]</div>
     </template>
     <!--prev-->
     <template is="dom-if" if="[[!_isFirstPage]]">
@@ -189,28 +162,28 @@ Example:
          */
         totalText: {
           type: String,
-          value: '共'
+          value: ''
         },
         /**
          * page quantifier.
          */
         pageQuantifier: {
           type: String,
-          value: '页'
+          value: 'pages'
         },
         /**
          * item quantifier.
          */
         itemQuantifier: {
           type: String,
-          value: '条'
+          value: 'Total'
         },
         /**
          * `jump to` button text.
          */
         jumpButtonText: {
           type: String,
-          value: '跳转'
+          value: 'GoTo'
         },
         /**
          * Whether it is the first page, computed by `currentPage`. It will affact the `prev` button. Default value is `true`.
