@@ -72,33 +72,37 @@ Example:
 
     <!--page couter-->
 
-    <template is="dom-if" if="[[!noPageCount]]">
-      <div>[[totalText]] [[_pageCount]] [[pageQuantifier]],</div>
-      <!--total-->
-      <div id="total">[[total]] [[itemQuantifier]]</div>
-    </template>
-    <!--prev-->
-    <template is="dom-if" if="[[!_isFirstPage]]">
-      <span on-tap="_prev"><</span>
-    </template>
-    <!--pager-->
-    <div>
-      <template is="dom-repeat" items="[[_pages]]" as="page">
-        <span on-tap="_jumpTo" data-page$="[[page]]" class$="[[_computeClass(page, currentPage)]]">
-          [[page]]
-        </span>
+    <template is="dom-if" if="[[_showElt(total)]]">
+
+      <template is="dom-if" if="[[!noPageCount]]">
+        <div>[[totalText]] [[_pageCount]] [[pageQuantifier]],</div>
+        <!--total-->
+        <div id="total">[[total]] [[itemQuantifier]]</div>
       </template>
-    </div>
-    <!--next-->
-    <template is="dom-if" if="[[!_isLastPage]]">
-      <span on-tap="_next">></span>
-    </template>
-    <!--jump device-->
-    <template is="dom-if" if="[[!noJumpDevice]]">
+      <!--prev-->
+      <template is="dom-if" if="[[!_isFirstPage]]">
+        <span on-tap="_prev"><</span>
+      </template>
+      <!--pager-->
       <div>
-        <input id="input" type="text">
-        <span id="jumpBtn" on-tap="_jump">[[jumpButtonText]]</span>
+        <template is="dom-repeat" items="[[_pages]]" as="page">
+          <span on-tap="_jumpTo" data-page$="[[page]]" class$="[[_computeClass(page, currentPage)]]">
+            [[page]]
+          </span>
+        </template>
       </div>
+      <!--next-->
+      <template is="dom-if" if="[[!_isLastPage]]">
+        <span on-tap="_next">></span>
+      </template>
+      <!--jump device-->
+      <template is="dom-if" if="[[!noJumpDevice]]">
+        <div>
+          <input id="input" type="text">
+          <span id="jumpBtn" on-tap="_jump">[[jumpButtonText]]</span>
+        </div>
+      </template>
+
     </template>
   </template>
 
@@ -336,7 +340,12 @@ Example:
         }
         this.currentPage = to;
         inputEl.value = '';
+      },
+
+      _showElt: function(total) {
+        return total > 0;
       }
+
     });
   </script>
 </dom-module>
